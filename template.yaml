@@ -4,7 +4,7 @@ Resources:
   CICDApiGatewayPreTestFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: CiCdApiGatewayPreTestManager
+      FunctionName: cicdCreateStage
       Handler: index.handler
       Runtime: nodejs6.10
       Environment:

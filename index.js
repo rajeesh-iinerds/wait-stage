@@ -52,7 +52,7 @@ exports.handler = function(event, context, callback) {
                         console.log(data);
                         var templateBody = data.TemplateBody;
                         var jsonTemplate = JSON.parse(templateBody);
-                        var restApiName = jsonTemplate.Resources.MyApi.Properties.Name;
+                        var restApiName = jsonTemplate.Resources.CCTApi.Properties.Name;
                         var apiListParams = {
                             limit: 20,   
                         };
