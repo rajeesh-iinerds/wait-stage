@@ -15,6 +15,9 @@ var apigateway = new AWS.APIGateway();
 exports.handler = function(event, context, callback) {
 
     var jobId = event["CodePipeline.job"].id;
+    // Retrieve the value of UserParameters from the Lambda action configuration in AWS CodePipeline, in this case a URL which will be
+    // health checked by this function.
+    var stackName = event["CodePipeline.job"].data.actionConfiguration.configuration.UserParameters; 
     //var stackName = event["CodePipeline.job"].data.inputArtifacts[0].name;
 
     // Retrieve the value of UserParameters from the Lambda action configuration in AWS CodePipeline, in this case a URL which will be
@@ -25,7 +28,7 @@ exports.handler = function(event, context, callback) {
     // };
     
     var stackParams = {
-        StackName: 'MyBetaStack3',
+        StackName: stackName || '',
         TemplateStage: 'Processed'
     };
 
@@ -206,6 +209,27 @@ exports.handler = function(event, context, callback) {
             }    
         });    
     }    
+
+    // Notify AWS CodePipeline of a failed job
+    var putJobFailure = function(message) {
+        var params = {
+            jobId: jobId,
+            failureDetails: {
+                message: JSON.stringify(message),
+                type: 'JobFailed',
+                externalExecutionId: context.invokeid
+            }
+        };
+        codepipeline.putJobFailureResult(params, function(err, data) {
+            context.fail(message);      
+        });
+    };
+
+    // Validate the URL passed in UserParameters
+    if(!stackName) {
+        putJobFailure('The UserParameters field must contain the Stack Name!');  
+        return;
+    }
 
     putJobSuccess('Success');
 };
