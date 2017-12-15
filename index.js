@@ -66,6 +66,7 @@ exports.handler = function(event, context, callback) {
                 callback(null, {
                     statusCode: '200',
                     body: 'success',
+                    apiId: restApiIdVal
                 });
             }
             
@@ -73,6 +74,7 @@ exports.handler = function(event, context, callback) {
             callback(null, {
                 statusCode: '200',
                 body: 'failure',
+                apiId: restApiIdVal
             });
         }
     });            
