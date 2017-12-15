@@ -24,7 +24,7 @@ var lammbda = new AWS.Lambda();
 
 // Lambda handler start here.
 exports.handler = function(event, context, callback) {
-    console.log("Got from StepFunction: " + event);
+    console.log("Got from StepFunction: " + JSON.parse(event));
 
     //Retrieve the CodePipeline ID 
 
