@@ -54,7 +54,8 @@ exports.handler = function(event, context, callback) {
             })
             var deploymentIdOfProdVal = deploymentIdOfProd.value;
 
-            /** Check for the Presence of Both the "staging" and "prod" stage.
+            /** 
+             * Check for the Presence of Both the "staging" and "prod" stage.
              * The value in "body" is evaluted by the StepFunction: 
              * arn:aws:states:us-east-2:902849442700:stateMachine:WaitStage
              * Unless the both the "prod" and "staging" stages exists, this Lambda will be 
@@ -66,6 +67,11 @@ exports.handler = function(event, context, callback) {
                 callback(null, {
                     statusCode: '200',
                     body: 'success',
+                    /** 
+                    * This is a Hack. The SF Task requires the field to process for this Lambda.
+                    * Need to study the InputPath, OutputPath and ResultPath properly 
+                    * and pass between States.
+                    */ 
                     apiId: restApiIdVal
                 });
             }
@@ -74,7 +80,11 @@ exports.handler = function(event, context, callback) {
             callback(null, {
                 statusCode: '200',
                 body: 'failure',
-                apiId: restApiIdVal
+                /** This is a Hack. The SF Task requires the field to process for this Lambda.
+                 * Need to study the InputPath, OutputPath and ResultPath properly 
+                 * and pass between States.
+                 */ 
+                apiId: restApiIdVal 
             });
         }
     });            
