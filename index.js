@@ -6,19 +6,19 @@
 'use strict'
 
 /**
+ * Intiialize the required AWS API
+ */
+const jsonQuery = require('json-query');
+var AWS = require('aws-sdk');
+var apigateway = new AWS.APIGateway();
+
+/**
  * Define AWS API version
  */
 AWS.config.apiVersions = {
   cloudformation: '2010-05-15',
   // other service API versions
 };
-
-/**
- * Intiialize the required AWS API
- */
-const jsonQuery = require('json-query');
-var AWS = require('aws-sdk');
-var apigateway = new AWS.APIGateway();
 
 // Lambda handler starts here.
 exports.handler = function(event, context, callback) {
