@@ -25,31 +25,16 @@ var lammbda = new AWS.Lambda();
 // Lambda handler start here.
 exports.handler = function(event, context, callback) {
 
-    //var eventObj = JSON.parse(event);
-    console.log(JSON.stringify(event));
-
-    //Retrieve the CodePipeline ID 
-
-    /**
-     * Retrieve the value of UserParameters from the Lambda action configuration in AWS CodePipeline, in this case a URL which will be
-     * health checked by this function.
-     */
-    //var stackName = event["CodePipeline.job"].data.actionConfiguration.configuration.UserParameters; 
-
-    // Define the Cloudformation stack parameters. The processed CF template need to be used.     
-    var stackParams = {
-        StackName: 'CICD-Test-Node-CFStackName',
-        TemplateStage: 'Processed'
-    };
-
-    // REST Api Id of the deployed API.
-    var restApiIdVal = 'dimwfyr6n5';
-
+    // API Id of the deployed API. Passed by the StepFunction!!
+    var restApiIdVal = event.apiId;
     var apiStageParams = {
         restApiId: restApiIdVal /* required */
-        //limit: 0,   
     };
 
+    /** Get all the API list and Loop through the stages
+     * Currently check only the "staging" and "prod" stages.
+     * This need to be automated basd on the config values.
+     */
     apigateway.getStages(apiStageParams, function(err, data) {
         if (err) {
             console.log(err, err.stack)
@@ -69,7 +54,10 @@ exports.handler = function(event, context, callback) {
             })
             var deploymentIdOfProdVal = deploymentIdOfProd.value;
             
-            //Check for the Stage creation.
+            /** Check for the Presence of Both the "staging" and "prod" stage.
+             * The value is "body is evaluted by the "
+             */
+
             if (deploymentIdOfProdVal && deploymentIdOfStagingVal) {
                     callback(null, {
                         statusCode: '200',
