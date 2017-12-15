@@ -23,8 +23,10 @@ AWS.config.apiVersions = {
 // Lambda handler starts here.
 exports.handler = function(event, context, callback) {
 
+    console.log(JSON.stringify(event));
     // API Id of the deployed API. Passed by the StepFunction!!
     var restApiIdVal = event.apiId;
+
     var apiStageParams = {
         restApiId: restApiIdVal /* required */
     };
@@ -52,12 +54,6 @@ exports.handler = function(event, context, callback) {
             })
             var deploymentIdOfProdVal = deploymentIdOfProd.value;
 
-            //Production Stage info.
-            var deploymentIdOfDev = jsonQuery('item[stageName=dev].deploymentId', {
-                data: data
-            })
-            var deploymentIdOfDevVal = deploymentIdOfDev.value;
-            
             /** Check for the Presence of Both the "staging" and "prod" stage.
              * The value in "body" is evaluted by the StepFunction: 
              * arn:aws:states:us-east-2:902849442700:stateMachine:WaitStage
@@ -66,7 +62,7 @@ exports.handler = function(event, context, callback) {
              * Typically API stages takes maximum of 30 seconds to reflect the changes; 
              * so an around of maximum of SIX loop calls to this function.
              */
-            if (deploymentIdOfProdVal && deploymentIdOfStagingVal && deploymentIdOfDevVal) {
+            if (deploymentIdOfProdVal && deploymentIdOfStagingVal) {
                 callback(null, {
                     statusCode: '200',
                     body: 'success',
