@@ -43,76 +43,43 @@ exports.handler = function(event, context, callback) {
     };
 
     // REST Api Id of the deployed API.
-    var restApiIdVal;
-   
-    cloudformation.getTemplate(stackParams, function(err, data) {
-        if (err) { 
-            console.log(err, err.stack);
-        }
-        else {
+    var restApiIdVal = 'dimwfyr6n5';
 
-            var templateBody = data.TemplateBody; // template body.
-            var jsonTemplate = JSON.parse(templateBody);
-            // Retreive the API Name
-            var restApiName = jsonTemplate.Resources.CCTApi.Properties.Name;
+    var apiStageParams = {
+        restApiId: restApiIdVal /* required */
+        //limit: 0,   
+    };
+
+    apigateway.getStages(apiStageParams, function(err, data) {
+        if (err) {
+            console.log(err, err.stack)
+        }    
+        // an error occurred
+        else {   
+    
+            //Staging Stage info.    
+            var deploymentIdOfStaging = jsonQuery('item[stageName=staging].deploymentId', {
+                data: data
+            })
+            var deploymentIdOfStagingVal = deploymentIdOfStaging.value;
+
+            //Production Stage info.
+            var deploymentIdOfProd = jsonQuery('item[stageName=prod].deploymentId', {
+                data: data
+            })
+            var deploymentIdOfProdVal = deploymentIdOfProd.value;
             
-            // Define the API List parameters. 
-            var apiListParams = {
-                limit: 20,   
-            };
+            //Check for the Stage creation.
+            if (deploymentIdOfProdVal && deploymentIdOfStagingVal) {
+                    callback(null, {
+                        statusCode: '200',
+                        body: 'success',
+                    });
+            }
             
-            // Retrieve All the API and then pass the Restapiid to retrieve the correct API.
-            apigateway.getRestApis(apiListParams, function(err, data) {
-                if (err) {
-                    //console.log(err, err.stack) 
-                }    
-                else {
-                    //console.log(data); 
-                    var currentApiData = jsonQuery('items[name=' + restApiName+ '].id', {
-                        data: data
-                    }) 
-
-                    restApiIdVal = currentApiData.value;
-                    var apiStageParams = {
-                        restApiId: restApiIdVal /* required */
-                        //limit: 0,   
-                    };
-
-                    apigateway.getStages(apiStageParams, function(err, data) {
-                        if (err) {
-                            console.log(err, err.stack)
-                        }    
-                        // an error occurred
-                        else {   
-                    
-                            //Staging Stage info.    
-                            var deploymentIdOfStaging = jsonQuery('item[stageName=staging].deploymentId', {
-                                data: data
-                            })
-                            var deploymentIdOfStagingVal = deploymentIdOfStaging.value;
-
-                            //Production Stage info.
-                            var deploymentIdOfProd = jsonQuery('item[stageName=prod].deploymentId', {
-                                data: data
-                            })
-                            var deploymentIdOfProdVal = deploymentIdOfProd.value;
-                            
-                            //Check for the Stage creation.
-                            if (deploymentIdOfProdVal && deploymentIdOfStagingVal) {
-                                 callback(null, {
-                                     statusCode: '200',
-                                     body: 'success',
-                                 });
-                            }
-                            
-                            callback(null, {
-                                     statusCode: '200',
-                                     body: 'failure',
-                            });
-                        }    
-                    // console.log("Stage Message: " + util.inspect(stagesStagePresent.value, {depth: null})); 
-                    });  
-                }    
+            callback(null, {
+                        statusCode: '200',
+                        body: 'failure',
             });
         }
     });            
