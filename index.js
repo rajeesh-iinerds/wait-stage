@@ -24,8 +24,9 @@ var lammbda = new AWS.Lambda();
 
 // Lambda handler start here.
 exports.handler = function(event, context, callback) {
-    var eventObj = JSON.parse(event);
-    console.log("Got from StepFunction: " + eventObj);
+
+    //var eventObj = JSON.parse(event);
+    console.log("Got from StepFunction: " + event.input.apiId);
 
     //Retrieve the CodePipeline ID 
 
@@ -49,7 +50,6 @@ exports.handler = function(event, context, callback) {
             console.log(err, err.stack);
         }
         else {
-            console.log(data);
 
             var templateBody = data.TemplateBody; // template body.
             var jsonTemplate = JSON.parse(templateBody);
@@ -73,14 +73,12 @@ exports.handler = function(event, context, callback) {
                     }) 
 
                     restApiIdVal = currentApiData.value;
-                    console.log("Rest API Id: ", restApiIdVal);
                     var apiStageParams = {
                         restApiId: restApiIdVal /* required */
                         //limit: 0,   
                     };
 
                     apigateway.getStages(apiStageParams, function(err, data) {
-                        console.log("Stages: ", data);
                         if (err) {
                             console.log(err, err.stack)
                         }    
