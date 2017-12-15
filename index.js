@@ -24,6 +24,7 @@ var lammbda = new AWS.Lambda();
 
 // Lambda handler start here.
 exports.handler = function(event, context, callback) {
+    console.log(event);
 
     //Retrieve the CodePipeline ID 
 
@@ -98,10 +99,17 @@ exports.handler = function(event, context, callback) {
                             var deploymentIdOfProdVal = deploymentIdOfProd.value;
                             
                             //Check for the Stage creation.
-                            if (deploymentIdOfProd && deploymentIdOfStagingVal) {
-                                context.succeed('Success');
+                            if (deploymentIdOfProdVal && deploymentIdOfStagingVal) {
+                                 callback(null, {
+                                     statusCode: '200',
+                                     body: 'success',
+                                 });
                             }
-                            context.fail('Failure');
+                            
+                            callback(null, {
+                                     statusCode: '200',
+                                     body: 'failure',
+                            });
                         }    
                     // console.log("Stage Message: " + util.inspect(stagesStagePresent.value, {depth: null})); 
                     });  
